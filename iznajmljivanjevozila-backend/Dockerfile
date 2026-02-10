@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     sqlite3 \
-    libsqlite3-dev
+    libsqlite3-dev \
+    nginx
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -33,9 +34,6 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 # Set permissions
 RUN chmod -R 777 storage bootstrap/cache database
 
-# Expose port 10000
-EXPOSE 10000
-
 # Script to run at startup
 RUN echo '#!/bin/sh\n\
     if [ ! -f .env ]; then\n\
@@ -44,10 +42,12 @@ RUN echo '#!/bin/sh\n\
     php artisan key:generate --force\n\
     touch database/database.sqlite\n\
     chmod 777 database/database.sqlite\n\
-    php artisan migrate --force\n\
-    php artisan db:seed --force\n\
+    php artisan migrate --force --seed\n\
     php artisan storage:link\n\
-    php artisan serve --host=0.0.0.0 --port=10000' > /usr/local/bin/start.sh
+    # Use the PORT environment variable if available, fallback to 10000\n\
+    PORT=${PORT:-10000}\n\
+    echo "Starting Laravel on port $PORT..."\n\
+    php artisan serve --host=0.0.0.0 --port=$PORT' > /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh
 
