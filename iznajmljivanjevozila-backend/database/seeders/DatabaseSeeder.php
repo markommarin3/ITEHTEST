@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
             'registracioniBroj' => 'BG-111-AA',
             'cenaPoDanu' => 85.00,
             'status' => 'DOSTUPNO',
-            'image_url' => 'https://images.unsplash.com/photo-1605515298946-d062f2e9da53?auto=format&fit=crop&q=80&w=800',
+            'image_url' => 'https://vrelegume.rs/wp-content/uploads/2022/06/IMG_20220603_192606.jpg',
             'godiste' => 2023,
             'gorivo' => 'Hibrid',
             'menjac' => 'Automatski',
