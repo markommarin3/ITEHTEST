@@ -136,7 +136,7 @@ class DatabaseSeeder extends Seeder
             'registracioniBroj' => 'BG-812-FE',
             'cenaPoDanu' => 3000.00,
             'status' => 'DOSTUPNO',
-            'image_url' => 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=800',
+            'image_url' => 'https://www.europeanprestige.co.uk/blobs/stock/474/images/8a0f41d3-148e-4ea1-adb0-5744dba3f656/hi4a6562.jpg?width=2000&height=1333',
             'godiste' => 2023,
             'gorivo' => 'Benzin',
             'menjac' => 'Automatski',
