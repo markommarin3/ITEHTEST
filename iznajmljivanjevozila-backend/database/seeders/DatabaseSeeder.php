@@ -128,6 +128,21 @@ class DatabaseSeeder extends Seeder
             'sedista' => 4
         ]);
 
+        $v6 = Vozilo::create([
+            'filijalaId' => $b1->id,
+            'kategorijaId' => $c3->id,
+            'marka' => 'Ferrari',
+            'model' => '812 Competizione',
+            'registracioniBroj' => 'BG-812-FE',
+            'cenaPoDanu' => 3000.00,
+            'status' => 'DOSTUPNO',
+            'image_url' => 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=800',
+            'godiste' => 2023,
+            'gorivo' => 'Benzin',
+            'menjac' => 'Automatski',
+            'sedista' => 2
+        ]);
+
         // 5. Test Rezervacije
         $res = Rezervacija::create([
             'korisnikId' => $klijent->id,
