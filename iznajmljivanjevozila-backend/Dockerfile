@@ -30,11 +30,24 @@ COPY . /var/www
 # Install dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Create sqlite database
-RUN touch database/database.sqlite
-RUN chmod -R 777 storage bootstrap/cache database
+# Set permissions
+RUN chmod -R 777 storage bootstrap/cache
 
-# Expose port 10000 and start php-fpm server
+# Expose port 10000
 EXPOSE 10000
 
-CMD php artisan serve --host=0.0.0.0 --port=10000
+# Script to run at startup
+RUN echo '#!/bin/sh\n\
+if [ ! -f .env ]; then\n\
+    cp .env.example .env\n\
+fi\n\
+php artisan key:generate --force\n\
+touch database/database.sqlite\n\
+php artisan migrate --force\n\
+php artisan db:seed --force\n\
+php artisan storage:link\n\
+php artisan serve --host=0.0.0.0 --port=10000' > /usr/local/bin/start.sh
+
+RUN chmod +x /usr/local/bin/start.sh
+
+CMD ["/usr/local/bin/start.sh"]
