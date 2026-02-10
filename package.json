@@ -1,0 +1,8 @@
+{
+    "name": "itehtest-root",
+    "private": true,
+    "scripts": {
+        "build": "npm run build --prefix iznajmljivanjevozila-frontend",
+        "install": "npm install --prefix iznajmljivanjevozila-frontend"
+    }
+}
