@@ -1,0 +1,12 @@
+{
+  "//": "Osnovna Vercel konfiguracija za ovaj repozitorijum.",
+  "//_note": "Root direktorijum projekta se i dalje PODEŠAVA u Vercel dashboard-u -> Project Settings -> Root Directory = iznajmljivanjevozila-frontend.",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ],
+  "buildCommand": "cd iznajmljivanjevozila-frontend && npm install && npm run build",
+  "outputDirectory": "iznajmljivanjevozila-frontend/dist",
+  "framework": "vite"
+}
+
+
