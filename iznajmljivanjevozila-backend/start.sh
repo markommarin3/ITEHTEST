@@ -8,11 +8,13 @@ fi
 # Generate APP_KEY if not set
 php artisan key:generate --force --no-interaction
 
-# Create SQLite database file if using sqlite
-if grep -q "DB_CONNECTION=sqlite" .env 2>/dev/null || [ -z "$(grep DB_CONNECTION .env 2>/dev/null)" ]; then
-    echo "Using SQLite - creating database file..."
-    touch database/database.sqlite
-fi
+# Force DB_CONNECTION to sqlite to override any Render environment variables
+export DB_CONNECTION=sqlite
+
+echo "Using SQLite - creating database file..."
+mkdir -p database
+touch database/database.sqlite
+
 
 # Run migrations and seed the database
 php artisan migrate --force --no-interaction
