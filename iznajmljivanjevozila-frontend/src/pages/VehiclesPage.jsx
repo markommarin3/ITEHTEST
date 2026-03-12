@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import Card from '../components/Card';
 import Button from '../components/Button';
 
