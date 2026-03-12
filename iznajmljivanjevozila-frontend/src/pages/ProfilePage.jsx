@@ -26,8 +26,8 @@ const ProfilePage = () => {
             } catch (err) {
                 console.error('Error fetching data:', err);
                 if (err.response?.status === 401) {
-                    localStorage.removeItem('ACCESS_TOKEN');
-                    localStorage.removeItem('USER_DATA');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
                     window.location.href = '/login';
                 }
             } finally {
@@ -67,7 +67,7 @@ const ProfilePage = () => {
                 telefon
             });
 
-            localStorage.setItem('USER_DATA', JSON.stringify(response.data.user));
+            localStorage.setItem('user', JSON.stringify(response.data.user));
             setMessage({ text: 'Profil je uspešno ažuriran!', type: 'success' });
         } catch (err) {
             setMessage({ text: 'Greška prilikom ažuriranja profila.', type: 'error' });

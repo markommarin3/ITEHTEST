@@ -10,7 +10,7 @@ const api = axios.create({
 
 // Presretac za dodavanje tokena u svaki zahtev
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('ACCESS_TOKEN');
+    const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
