@@ -1,0 +1,84 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Iznajmljivanje Vozila API",
+        "description": "Swagger API dokumentacija",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Lokalni API Server"
+        }
+    ],
+    "paths": {
+        "/api/vozila": {
+            "get": {
+                "tags": [
+                    "Vozila"
+                ],
+                "summary": "Dobijanje liste vozila",
+                "operationId": "getVozilaList",
+                "parameters": [
+                    {
+                        "name": "kategorijaId",
+                        "in": "query",
+                        "description": "ID kategorije",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Status vozila",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesna operacija"
+                    }
+                }
+            }
+        },
+        "/api/vozila/{id}": {
+            "get": {
+                "tags": [
+                    "Vozila"
+                ],
+                "summary": "Dobijanje detalja o jednom vozilu",
+                "operationId": "getVoziloById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID vozila",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesna operacija"
+                    },
+                    "404": {
+                        "description": "Vozilo nije pronadjeno"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Vozila",
+            "description": "Vozila"
+        }
+    ]
+}

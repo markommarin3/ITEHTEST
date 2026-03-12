@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: auto-rent-backend
+    runtime: docker
+    dockerContext: ./iznajmljivanjevozila-backend
+    dockerfilePath: ./iznajmljivanjevozila-backend/Dockerfile
+    envVars:
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: mysql
+      - key: NODE_VERSION
+        value: 18
+
+  - type: web
+    name: auto-rent-frontend
+    runtime: static
+    buildCommand: cd iznajmljivanjevozila-frontend && npm install && npm run build
+    staticPublishPath: ./iznajmljivanjevozila-frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: auto-rent-backend
+          type: web
+          property: host
+
+databases:
+  - name: auto-rent-db
+    databaseName: autorent
+    plan: free
+    region: frankfurt

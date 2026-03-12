@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Vozilo;
+use App\Models\Aktivnost;
+use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
+
+class VehicleController extends Controller
+{
+    #[OA\Get(path: '/api/vozila', operationId: 'getVozilaList', summary: 'Dobijanje liste vozila', tags: ['Vozila'])]
+    #[OA\Parameter(name: 'kategorijaId', description: 'ID kategorije', in: 'query', required: false, schema: new OA\Schema(type: 'integer'))]
+    #[OA\Parameter(name: 'status', description: 'Status vozila', in: 'query', required: false, schema: new OA\Schema(type: 'string'))]
+    #[OA\Response(response: 200, description: 'Uspesna operacija')]
+    public function index(Request $request)
+    {
+        $query = Vozilo::with(['filijala', 'kategorija']);
+
+        if ($request->has('kategorijaId')) {
+            $query->where('kategorijaId', $request->kategorijaId);
+        }
+
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        } elseif (!$request->has('status')) {
+            $query->available();
+        }
+
+        if ($request->has('filijalaId')) {
+            $query->where('filijalaId', $request->filijalaId);
+        }
+
+        $vehicles = $query->paginate(12);
+
+        return response()->json($vehicles);
+    }
+
+    #[OA\Get(path: '/api/vozila/{id}', operationId: 'getVoziloById', summary: 'Dobijanje detalja o jednom vozilu', tags: ['Vozila'])]
+    #[OA\Parameter(name: 'id', description: 'ID vozila', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))]
+    #[OA\Response(response: 200, description: 'Uspesna operacija')]
+    #[OA\Response(response: 404, description: 'Vozilo nije pronadjeno')]
+    public function show($id)
+    {
+        $vehicle = Vozilo::with(['filijala', 'kategorija', 'reviews.korisnik'])->findOrFail($id);
+
+        return response()->json($vehicle);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'filijalaId' => 'required|exists:filijale,id',
+            'kategorijaId' => 'required|exists:kategorije_vozila,id',
+            'marka' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'registracioniBroj' => 'required|string|unique:vozila',
+            'cenaPoDanu' => 'required|numeric|min:0',
+            'godiste' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'gorivo' => 'required|string',
+            'menjac' => 'required|string',
+            'sedista' => 'required|integer|min:2|max:50',
+            'image_url' => 'nullable|url',
+        ]);
+
+        $vehicle = Vozilo::create([
+            'filijalaId' => $request->filijalaId,
+            'kategorijaId' => $request->kategorijaId,
+            'marka' => $request->marka,
+            'model' => $request->model,
+            'registracioniBroj' => $request->registracioniBroj,
+            'cenaPoDanu' => $request->cenaPoDanu,
+            'status' => 'DOSTUPNO',
+            'godiste' => $request->godiste,
+            'gorivo' => $request->gorivo,
+            'menjac' => $request->menjac,
+            'sedista' => $request->sedista,
+            'image_url' => $request->image_url,
+        ]);
+
+        Aktivnost::create([
+            'korisnikId' => $request->user()->id,
+            'akcija' => 'VEHICLE_CREATED',
+            'detalji' => "Dodato novo vozilo: {$vehicle->marka} {$vehicle->model} ({$vehicle->registracioniBroj})",
+            'tip' => 'success'
+        ]);
+
+        return response()->json([
+            'message' => 'Vozilo uspešno dodato',
+            'vehicle' => $vehicle,
+        ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $vehicle = Vozilo::findOrFail($id);
+
+        $request->validate([
+            'filijalaId' => 'sometimes|exists:filijale,id',
+            'kategorijaId' => 'sometimes|exists:kategorije_vozila,id',
+            'registracioniBroj' => 'sometimes|string|unique:vozila,registracioniBroj,' . $id,
+            'status' => 'sometimes|in:DOSTUPNO,U_NAJMU,SERVIS,NEAKTIVNO',
+            'cenaPoDanu' => 'sometimes|numeric|min:0',
+        ]);
+
+
+
+        $oldPrice = $vehicle->cenaPoDanu;
+        $vehicle->update($request->all());
+
+        if ($request->has('cenaPoDanu') && $oldPrice != $vehicle->cenaPoDanu) {
+            Aktivnost::create([
+                'korisnikId' => $request->user()->id,
+                'akcija' => 'VEHICLE_PRICE_CHANGED',
+                'detalji' => "Promenjena cena za {$vehicle->marka} {$vehicle->model}: {$oldPrice}€ -> {$vehicle->cenaPoDanu}€",
+                'tip' => 'warning'
+            ]);
+        } else {
+            Aktivnost::create([
+                'korisnikId' => $request->user()->id,
+                'akcija' => 'VEHICLE_UPDATED',
+                'detalji' => "Izmenjeni podaci za vozilo: {$vehicle->marka} {$vehicle->model}",
+                'tip' => 'info'
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Podaci o vozilu uspešno ažurirani',
+            'vehicle' => $vehicle,
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $vehicle = Vozilo::findOrFail($id);
+        $details = "Obrisano vozilo: {$vehicle->marka} {$vehicle->model} ({$vehicle->registracioniBroj})";
+        $vehicle->delete();
+
+        Aktivnost::create([
+            'korisnikId' => auth()->user()->id,
+            'akcija' => 'VEHICLE_DELETED',
+            'detalji' => $details,
+            'tip' => 'error'
+        ]);
+
+        return response()->json([
+            'message' => 'Vozilo uspešno obrisano',
+        ]);
+    }
+}

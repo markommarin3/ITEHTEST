@@ -1,0 +1,7 @@
+START_APP.bat
+
+iznajmljivanjevozila-backend/.env
+
+iznajmljivanjevozila-frontend/node_modules/
+iznajmljivanjevozila-frontend/.env
+iznajmljivanjevozila-frontend/dist/
