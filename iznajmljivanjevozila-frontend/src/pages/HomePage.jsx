@@ -5,14 +5,14 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 
 const HomePage = () => {
-    const [featuredVehicles, setFeaturedVehicles] = useState([]);
+    const [vehicles, setVehicles] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchFeatured = async () => {
+        const fetchVehicles = async () => {
             try {
                 const response = await api.get('/api/vehicles');
-                setFeaturedVehicles(response.data.data.slice(0, 3) || []);
+                setVehicles(response.data.data.slice(0, 3) || []);
             } catch (error) {
                 console.error('Error fetching vehicles:', error);
             } finally {
@@ -34,18 +34,18 @@ const HomePage = () => {
                         Pronađite najbolja vozila za vaše potrebe na našem sajtu. Sigurno i pouzdano.
                     </p>
                     <div className="flex justify-center gap-4">
-                        <button
+                        <Link
+                            to="/vozila"
                             className="bg-blue-600 text-white px-6 py-3 rounded font-bold hover:bg-blue-700 transition"
-                            onClick={() => window.location.href = '/vozila'}
                         >
                             Pogledaj Vozila
-                        </button>
-                        <button
+                        </Link>
+                        <Link
+                            to="/register"
                             className="bg-gray-300 text-gray-800 px-6 py-3 rounded font-bold hover:bg-gray-400 transition"
-                            onClick={() => window.location.href = '/register'}
                         >
                             Registruj se
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@ const HomePage = () => {
                             <h2 className="text-3xl font-bold text-gray-900">Izdvajamo iz ponude</h2>
                             <p className="text-gray-600 font-medium">Pogledajte neka od naših najpopularnijih vozila.</p>
                         </div>
-                        <a href="/vozila" className="text-blue-600 font-bold uppercase text-[10px] hover:underline">Sva vozila →</a>
+                        <Link to="/vozila" className="text-blue-600 font-bold uppercase text-[10px] hover:underline">Sva vozila →</Link>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
@@ -91,9 +91,9 @@ const HomePage = () => {
                                     subtitle={v.kategorija?.naziv}
                                     image={v.image_url || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800'}
                                     footer={
-                                        <button className="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 transition" onClick={() => window.location.href = `/vozila/${v.id}`}>
+                                        <Link to={`/vozila/${v.id}`} className="block w-full text-center bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 transition">
                                             Rezerviši
-                                        </button>
+                                        </Link>
                                     }
                                 >
                                     <p className="text-xl font-bold text-blue-600 mt-2">{v.cenaPoDanu} € <span className="text-[10px] text-gray-500 font-bold uppercase">/dan</span></p>
@@ -109,12 +109,12 @@ const HomePage = () => {
                 <div className="max-w-xl mx-auto px-4">
                     <h2 className="text-3xl font-bold mb-4">Želite da iznajmite vozilo?</h2>
                     <p className="mb-8">Napravite nalog i krenite na put već danas.</p>
-                    <button
+                    <Link
+                        to="/register"
                         className="bg-white text-blue-600 px-8 py-3 rounded font-bold hover:bg-gray-100"
-                        onClick={() => window.location.href = '/register'}
                     >
                         Registruj se
-                    </button>
+                    </Link>
                 </div>
             </div>
         </div>
