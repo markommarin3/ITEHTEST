@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import Input from '../components/Input';
+import Button from '../components/Button';
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
@@ -10,22 +12,28 @@ const RegisterPage = () => {
         sifra_confirmation: '',
         telefon: ''
     });
-    const [errors, setErrors] = useState({});
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        setErrors({});
+        setError('');
+        
+        if (formData.sifra !== formData.sifra_confirmation) {
+            setError('Lozinke se ne podudaraju.');
+            return;
+        }
+
         setLoading(true);
 
         try {
             await api.post('/api/register', formData);
-
             navigate('/login', { state: { message: 'Uspešno ste se registrovali! Prijavite se.' } });
         } catch (err) {
             setError(err.response?.data?.message || 'Greška prilikom registracije. Proverite podatke.');
@@ -38,7 +46,7 @@ const RegisterPage = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-20 px-4">
             <div className="max-w-4xl w-full bg-white rounded border border-gray-200 shadow-sm overflow-hidden flex flex-col md:flex-row">
 
-                {/* Forma za prijavu */}
+                {/* Info Sekcija */}
                 <div className="md:w-1/2 bg-blue-600 p-12 text-white flex flex-col justify-center">
                     <h2 className="text-3xl font-bold mb-6">PRIDRUŽI SE</h2>
                     <p className="text-blue-100 font-medium mb-8">
@@ -70,43 +78,48 @@ const RegisterPage = () => {
 
                         <Input
                             label="Puno Ime"
+                            name="ime"
                             type="text"
                             placeholder="Zoran Petrović"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={formData.ime}
+                            onChange={handleChange}
                             required
                         />
                         <Input
                             label="Email Adresa"
+                            name="email"
                             type="email"
                             placeholder="zoran@mail.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={handleChange}
                             required
                         />
                         <Input
                             label="Broj Telefona"
+                            name="telefon"
                             type="tel"
                             placeholder="+381 6..."
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            value={formData.telefon}
+                            onChange={handleChange}
                             required
                         />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Input
                                 label="Lozinka"
+                                name="sifra"
                                 type="password"
                                 placeholder="Najmanje 8 karaktera"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={formData.sifra}
+                                onChange={handleChange}
                                 required
                             />
                             <Input
                                 label="Potvrdi Lozinku"
+                                name="sifra_confirmation"
                                 type="password"
                                 placeholder="Ponovite lozinku"
-                                value={passwordConfirmation}
-                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                value={formData.sifra_confirmation}
+                                onChange={handleChange}
                                 required
                             />
                         </div>
@@ -125,9 +138,9 @@ const RegisterPage = () => {
                     <div className="mt-8 text-center text-xs">
                         <p className="text-gray-500 font-medium">
                             Već imaš nalog?{' '}
-                            <a href="/login" className="font-bold text-blue-600 hover:text-blue-700 underline">
+                            <Link to="/login" className="font-bold text-blue-600 hover:text-blue-700 underline">
                                 Prijavi se
-                            </a>
+                            </Link>
                         </p>
                     </div>
                 </div>
