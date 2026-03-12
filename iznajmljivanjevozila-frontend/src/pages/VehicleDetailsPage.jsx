@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/Input';
+import Button from '../components/Button';
 
 const VehicleDetailsPage = () => {
     const { id } = useParams();
@@ -44,12 +45,11 @@ const VehicleDetailsPage = () => {
 
     const fetchSelectData = async () => {
         try {
-
-            const [catRes, branchRes] = await Promise.all([
-                api.get('/api/stats'),
-            ]);
-
-        } catch (err) { console.error(err); }
+            // Stats call for potential future use or consistency
+            await api.get('/api/stats');
+        } catch (err) { 
+            console.error('Error fetching select data:', err); 
+        }
     };
 
     const fetchClients = async (searchTerm = '') => {
